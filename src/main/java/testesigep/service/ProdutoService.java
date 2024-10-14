@@ -50,7 +50,7 @@ public class ProdutoService {
         try {
             return jdbcTemplate.queryForObject(sql, new Object[]{id}, new ProdutoRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            throw new ProdutoNotFoundException(id); 
+            throw new ProdutoNotFoundException(id);
         }
     }
 

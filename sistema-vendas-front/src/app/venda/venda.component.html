@@ -1,0 +1,74 @@
+<h2>Vendas</h2>
+<form (ngSubmit)="editMode ? updateVenda() : addVenda()">
+  <label for="cliente">Cliente:</label>
+  <input id="cliente" [(ngModel)]="venda.cliente" name="cliente" placeholder="Nome do Cliente" required>
+
+  <label for="produto">Selecionar Produto:</label>
+  <select id="produto" [(ngModel)]="selectedProduto" name="produto" required>
+    <option *ngFor="let produto of produtos" [ngValue]="produto">{{ produto.nome }}</option>
+  </select>
+
+  <label for="quantidade">Quantidade:</label>
+  <input id="quantidade" type="number" [(ngModel)]="quantidade" name="quantidade" placeholder="Quantidade" required min="1">
+
+  <button type="button" (click)="addProdutoVenda()">Adicionar Produto à Venda</button>
+
+  <label for="valorTotal">Valor Total:</label>
+  <input id="valorTotal" type="number" [(ngModel)]="venda.valorTotal" name="valorTotal" placeholder="Valor Total" [readonly]="true" required>
+
+  <button type="submit">{{ editMode ? 'Atualizar' : 'Adicionar' }}</button>
+  <button type="button" (click)="resetForm()" *ngIf="editMode">Cancelar</button>
+</form>
+
+<!-- Tabela de produtos adicionados -->
+<h3>Produtos na Venda</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Produto</th>
+      <th>Quantidade</th>
+      <th>Valor Unitário</th>
+      <th>Valor Total</th>
+      <th>Ações</th> <!-- Coluna de ações -->
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of produtosVenda; let i = index">
+      <td>{{ item.produto.nome }}</td>
+      <td>{{ item.quantidade }}</td>
+      <td>R$ {{ item.produto.valorUnitario }}</td>
+      <td>R$ {{ item.produto.valorUnitario * item.quantidade }}</td>
+      <td>
+        <button type="button" (click)="removeProdutoVenda(i)">Excluir</button> <!-- Botão de exclusão -->
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Tabela de vendas -->
+<table mat-table [dataSource]="vendas" class="mat-elevation-z8">
+  <!-- Coluna Cliente -->
+  <ng-container matColumnDef="cliente">
+    <th mat-header-cell *matHeaderCellDef> Cliente </th>
+    <td mat-cell *matCellDef="let element"> {{element.cliente}} </td>
+  </ng-container>
+
+  <!-- Coluna Valor Total -->
+  <ng-container matColumnDef="valorTotal">
+    <th mat-header-cell *matHeaderCellDef> Valor Total </th>
+    <td mat-cell *matCellDef="let element"> R$ {{element.valorTotal}} </td>
+  </ng-container>
+
+  <!-- Coluna Ações -->
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef> Ações </th>
+    <td mat-cell *matCellDef="let element">
+      <button (click)="editVenda(element)">Editar</button>
+      <button (click)="deleteVenda(element.id)">Excluir</button>
+    </td>
+  </ng-container>
+
+  <!-- Linhas da tabela -->
+  <tr mat-header-row *matHeaderRowDef="['cliente', 'valorTotal', 'actions']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['cliente', 'valorTotal', 'actions'];"></tr>
+</table>

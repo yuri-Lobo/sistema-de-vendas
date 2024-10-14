@@ -11,6 +11,7 @@ import testesigep.entity.Produto;
 import testesigep.exception.ProdutoNotFoundException;
 import testesigep.service.ProdutoService;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/produtos")
 public class ProdutoController {

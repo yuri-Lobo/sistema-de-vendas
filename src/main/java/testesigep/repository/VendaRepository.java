@@ -1,6 +1,7 @@
 package testesigep.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -27,8 +28,8 @@ public class VendaRepository {
         String sql = "SELECT * FROM vendas WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, new Object[]{id}, new VendaRowMapper());
-        } catch (VendaNotFoundException e) {
-            throw new VendaNotFoundException(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new VendaNotFoundException(id); 
         }
     }
 
@@ -38,11 +39,19 @@ public class VendaRepository {
     }
 
     public void update(Integer id, Venda venda) {
+        if (findById(id) == null) {
+            throw new VendaNotFoundException(id);
+        }
+
         String sql = "UPDATE vendas SET cliente = ?, valor_total = ? WHERE id = ?";
         jdbcTemplate.update(sql, venda.getCliente(), venda.getValorTotal(), id);
     }
 
     public boolean delete(Integer id) {
+        if (findById(id) == null) {
+            throw new VendaNotFoundException(id);
+        }
+
         String sql = "DELETE FROM vendas WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql, id);
         return rowsAffected > 0;

@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 @Configuration
@@ -29,27 +28,35 @@ public class DbConfiguration implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        JdbcTemplate jdbcTemplate = jdbcTemplate(dataSource()); 
+        JdbcTemplate jdbcTemplate = jdbcTemplate(dataSource());
 
         String createProdutosTable = "CREATE TABLE IF NOT EXISTS produtos (" +
-                     "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
-                     "nome VARCHAR(255)," +
-                     "descricao VARCHAR(255)," +
-                     "quantidade_disponivel INT," +
-                     "valor_unitario DECIMAL(10, 2)" +
-                     ")";
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                "nome VARCHAR(255)," +
+                "descricao VARCHAR(255)," +
+                "quantidade_disponivel INT," +
+                "valor_unitario DECIMAL(10, 2)" +
+                ")";
 
-        jdbcTemplate.execute(createProdutosTable );
-        
+        jdbcTemplate.execute(createProdutosTable);
+
         String createVendasTable = "CREATE TABLE IF NOT EXISTS vendas (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
                 "cliente VARCHAR(255) NOT NULL," +
-                "valor_total DECIMAL(10, 2) NOT NULL," +
-                "quantidades JSON NOT NULL" + 
+                "valor_total DECIMAL(10, 2) NOT NULL" +
                 ")";
 
-        
         jdbcTemplate.execute(createVendasTable);
+
+        String createVendaProdutoTable = "CREATE TABLE IF NOT EXISTS venda_produto (" +
+                "venda_id BIGINT NOT NULL," +
+                "produto_id BIGINT NOT NULL," +
+                "quantidade INT NOT NULL," +
+                "PRIMARY KEY (venda_id, produto_id)," +
+                "FOREIGN KEY (venda_id) REFERENCES vendas(id) ON DELETE CASCADE," +
+                "FOREIGN KEY (produto_id) REFERENCES produtos(id)" +
+                ")";
+
+        jdbcTemplate.execute(createVendaProdutoTable);
     }
-    
 }
